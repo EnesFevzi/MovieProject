@@ -35,9 +35,11 @@ namespace MovieProject.Service.Services.Concrete
             return _actorsRepository.GetByIDAsync(actorId);
         }
 
-        public async Task<List<Actor>> GetActors()
+        public async Task<List<ResultActorDto>> GetActors()
         {
-            return await _actorsRepository.GetAllAsync();
+            var actors = await _actorsRepository.GetAllAsync();
+            var map = _mapper.Map<List<ResultActorDto>>(actors);
+            return map;
         }
 
 

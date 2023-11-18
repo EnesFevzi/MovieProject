@@ -35,9 +35,11 @@ namespace MovieProject.Service.Services.Concrete
             return _repository.GetByIDAsync(categoryId);
         }
 
-        public async Task<List<Category>> GetCategorys()
+        public async Task<List<ResultCategoryDto>> GetCategorys()
         {
-           return await _repository.GetAllAsync();
+            var categories = await _repository.GetAllAsync();
+            var map = _mapper.Map<List<ResultCategoryDto>>(categories);
+            return map;
         }
 
 

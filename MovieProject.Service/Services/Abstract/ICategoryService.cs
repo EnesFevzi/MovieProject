@@ -10,7 +10,7 @@ namespace MovieProject.Service.Services.Abstract
 {
     public interface ICategoryService
     {
-        Task<List<Category>> GetCategorys();
+        Task<List<ResultCategoryDto>> GetCategorys();
         Task<Category> GetCategoryById(int categoryId);
         Task<Category> CreateCategory(CategoryAddDto category);
         Task<Category> UpdateCategory(CategoryUpdateDto category);
