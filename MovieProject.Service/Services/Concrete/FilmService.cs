@@ -42,22 +42,22 @@ namespace MovieProject.Service.Services.Concrete
         }
         public async Task<Film> UpdateFilm(FilmUpdateDto film)
         {
-            var map = _mapper.Map<Film>(film);
+            var updatedFilm = _mapper.Map<Film>(film);
 
             if (film.SelectedActors != null)
             {
                 foreach (var selectedActorId in film.SelectedActors)
                 {
                     var selectedActor = await _actorRepository.GetByIDAsync(selectedActorId);
-                    if (selectedActor != null && !map.Actors.Any(extra => extra.ActorId == selectedActorId))
+                    if (selectedActor != null && !updatedFilm.Actors.Any(extra => extra.ActorId == selectedActorId))
                     {
-                        map.Actors.Add(selectedActor);
+                        updatedFilm.Actors.Add(selectedActor);
                     }
-
                 }
             }
-            await _filmRepository.UpdateAsync(map);
-            return map;
+
+            await _filmRepository.UpdateAsync(updatedFilm);
+            return updatedFilm;
         }
 
         public async Task DeleteFilm(int filmId)
@@ -74,7 +74,6 @@ namespace MovieProject.Service.Services.Concrete
 
         public async Task<List<ResultFilmDto>> GetFilms()
         {
-
             var films = await _filmRepository.GetAllAsync(x => x.Category, x => x.Actors);
             var map = _mapper.Map<List<ResultFilmDto>>(films);
             return map;

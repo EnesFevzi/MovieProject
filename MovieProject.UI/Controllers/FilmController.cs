@@ -113,7 +113,7 @@ namespace MovieProject.UI.Controllers
             var client = _httpClientFactory.CreateClient();
             var jsonData = JsonConvert.SerializeObject(hospitalUpdateDto);
             StringContent stringContent = new StringContent(jsonData, Encoding.UTF8, "application/json");
-            var responseMessage = await client.PutAsync("https://localhost:7096/api/Film/UpdateFilm/", stringContent);
+            var responseMessage = await client.PutAsync("https://localhost:7096/api/Film/UpdateFilm", stringContent);
             if (responseMessage.IsSuccessStatusCode)
             {
                 return RedirectToAction("Index");
