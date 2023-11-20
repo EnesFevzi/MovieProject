@@ -36,19 +36,20 @@ namespace MovieProject.UI.Controllers
 
             // Kategorileri ve aktörleri al
             var categoryResponse = await client.GetAsync("https://localhost:7096/api/Category");
-            //var actorResponse = await client.GetAsync("https://localhost:7096/api/Actor");
+            var actorResponse = await client.GetAsync("https://localhost:7096/api/Actor");
 
             if (categoryResponse.IsSuccessStatusCode)
             {
-                var categoryJson = await categoryResponse.Content.ReadAsStringAsync();
-               // var actorJson = await actorResponse.Content.ReadAsStringAsync();
+               var categoryJson = await categoryResponse.Content.ReadAsStringAsync();
+               var actorJson = await actorResponse.Content.ReadAsStringAsync();
 
                 var categories = JsonConvert.DeserializeObject<List<Category>>(categoryJson);
-                //var actors = JsonConvert.DeserializeObject<List<Actor>>(actorJson);
+                var actors = JsonConvert.DeserializeObject<List<Actor>>(actorJson);
 
                 var viewModel = new FilmAddDto
                 {
                     Categories = categories,
+                    Actors = actors
                    
                 };
                 return View(viewModel);
@@ -60,6 +61,8 @@ namespace MovieProject.UI.Controllers
         public async Task<IActionResult> Create(FilmAddDto createhospitalDto)
         {
             var client = _httpClientFactory.CreateClient();
+            var categoryResponse = await client.GetAsync("https://localhost:7096/api/Category");
+            var actorResponse = await client.GetAsync("https://localhost:7096/api/Actor");
             var jsonData = JsonConvert.SerializeObject(createhospitalDto);
             StringContent stringContent = new StringContent(jsonData, Encoding.UTF8, "application/json");
             var responseMessage = await client.PostAsync("https://localhost:7096/api/Film/CreateFilm", stringContent);
@@ -67,17 +70,39 @@ namespace MovieProject.UI.Controllers
             {
                 return RedirectToAction("Index");
             }
-            return View();
+            var categoryJson = await categoryResponse.Content.ReadAsStringAsync();
+            var actorJson = await actorResponse.Content.ReadAsStringAsync();
+
+            var categories = JsonConvert.DeserializeObject<List<Category>>(categoryJson);
+            var actors = JsonConvert.DeserializeObject<List<Actor>>(actorJson);
+
+            var viewModel = new FilmAddDto
+            {
+                Categories = categories,
+                Actors = actors
+
+            };
+            return View(viewModel);
         }
         [HttpGet]
         public async Task<IActionResult> Update(int id)
         {
             var client = _httpClientFactory.CreateClient();
-            var responseMessage = await client.GetAsync($"https://localhost:7123/api/Hospital/{id}");
+            var responseMessage = await client.GetAsync($"https://localhost:7096/api/Film/{id}");
+            var categoryResponse = await client.GetAsync("https://localhost:7096/api/Category");
+            var actorResponse = await client.GetAsync("https://localhost:7096/api/Actor");
+
+
             if (responseMessage.IsSuccessStatusCode)
             {
+                var categoryJson = await categoryResponse.Content.ReadAsStringAsync();
+                var actorJson = await actorResponse.Content.ReadAsStringAsync();
                 var jsonData = await responseMessage.Content.ReadAsStringAsync();
                 var values = JsonConvert.DeserializeObject<FilmUpdateDto>(jsonData);
+                var categories = JsonConvert.DeserializeObject<List<Category>>(categoryJson);
+                var actors = JsonConvert.DeserializeObject<List<Actor>>(actorJson);
+                values.Actors = actors;
+                values.Categories = categories;
                 return View(values);
             }
             return View();
@@ -88,7 +113,7 @@ namespace MovieProject.UI.Controllers
             var client = _httpClientFactory.CreateClient();
             var jsonData = JsonConvert.SerializeObject(hospitalUpdateDto);
             StringContent stringContent = new StringContent(jsonData, Encoding.UTF8, "application/json");
-            var responseMessage = await client.PutAsync("https://localhost:7123/api/Hospital/UpdateHospital/", stringContent);
+            var responseMessage = await client.PutAsync("https://localhost:7096/api/Film/UpdateFilm/", stringContent);
             if (responseMessage.IsSuccessStatusCode)
             {
                 return RedirectToAction("Index");
@@ -99,7 +124,7 @@ namespace MovieProject.UI.Controllers
         public async Task<IActionResult> Delete(int id)
         {
             var client = _httpClientFactory.CreateClient();
-            var responseMessage = await client.DeleteAsync($"https://localhost:7123/api/Hospital/{id}");
+            var responseMessage = await client.DeleteAsync($"https://localhost:7096/api/Film/DeleteFilm/{id}");
             if (responseMessage.IsSuccessStatusCode)
             {
                 return RedirectToAction("Index");

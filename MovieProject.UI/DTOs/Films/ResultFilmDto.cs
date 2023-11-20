@@ -8,6 +8,7 @@ namespace MovieProject.UI.DTOs.Films
         public string Title { get; set; }
         public DateTime ReleaseDate { get; set; }
         public Category Category { get; set; }
+        public List<Actor> Actors { get; set; }
     }
 }
 

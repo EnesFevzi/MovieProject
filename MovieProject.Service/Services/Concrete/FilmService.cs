@@ -6,6 +6,7 @@ using MovieProject.Service.Services.Abstract;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -28,29 +29,34 @@ namespace MovieProject.Service.Services.Concrete
 
         public async Task CreateFilm(FilmAddDto film)
         {
-            var actor = await _actorRepository.GetByIDAsync(film.ActorId);
             var map = _mapper.Map<Film>(film);
-
-            map.Actors.Add(actor);
+            if (film.SelectedActors != null)
+            {
+                foreach (var item in film.SelectedActors)
+                {
+                    var findExtra = await _actorRepository.GetByIDAsync(item);
+                    map.Actors.Add(findExtra);
+                }
+            }
             await _filmRepository.AddAsync(map);
         }
         public async Task<Film> UpdateFilm(FilmUpdateDto film)
         {
-            var existingFilm = await _filmRepository.GetByIDAsync(film.FilmId);
-            var actor = await _actorRepository.GetByIDAsync(film.ActorId);
             var map = _mapper.Map<Film>(film);
-            if (existingFilm != null)
-            {
-                foreach (var item in existingFilm.Actors)
-                {
-                    if (item.ActorId != film.ActorId)
-                    {
-                        map.Actors.Add(actor);
 
+            if (film.SelectedActors != null)
+            {
+                foreach (var selectedActorId in film.SelectedActors)
+                {
+                    var selectedActor = await _actorRepository.GetByIDAsync(selectedActorId);
+                    if (selectedActor != null && !map.Actors.Any(extra => extra.ActorId == selectedActorId))
+                    {
+                        map.Actors.Add(selectedActor);
                     }
+
                 }
-                await _filmRepository.UpdateAsync(map);
             }
+            await _filmRepository.UpdateAsync(map);
             return map;
         }
 
@@ -62,13 +68,14 @@ namespace MovieProject.Service.Services.Concrete
         }
         public async Task<Film> GetFilmById(int filmId)
         {
-            return await _filmRepository.GetByIDAsync(filmId);
+            var film = await _filmRepository.GetAsync(x => x.FilmId == filmId);
+            return film;
         }
 
         public async Task<List<ResultFilmDto>> GetFilms()
         {
 
-            var films = await _filmRepository.GetAllAsync(x => x.Category);
+            var films = await _filmRepository.GetAllAsync(x => x.Category, x => x.Actors);
             var map = _mapper.Map<List<ResultFilmDto>>(films);
             return map;
         }

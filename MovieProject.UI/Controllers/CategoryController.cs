@@ -50,7 +50,7 @@ namespace MovieProject.UI.Controllers
         public async Task<IActionResult> Update(int id)
         {
             var client = _httpClientFactory.CreateClient();
-            var responseMessage = await client.GetAsync($"https://localhost:7123/api/Category/{id}");
+            var responseMessage = await client.GetAsync($"https://localhost:7096/api/Category/{id}");
             if (responseMessage.IsSuccessStatusCode)
             {
                 var jsonData = await responseMessage.Content.ReadAsStringAsync();
@@ -65,7 +65,7 @@ namespace MovieProject.UI.Controllers
             var client = _httpClientFactory.CreateClient();
             var jsonData = JsonConvert.SerializeObject(hospitalUpdateDto);
             StringContent stringContent = new StringContent(jsonData, Encoding.UTF8, "application/json");
-            var responseMessage = await client.PutAsync("https://localhost:7123/api/Category/UpdateCategory/", stringContent);
+            var responseMessage = await client.PutAsync("https://localhost:7096/api/Category/UpdateCategory/", stringContent);
             if (responseMessage.IsSuccessStatusCode)
             {
                 return RedirectToAction("Index");
@@ -76,7 +76,7 @@ namespace MovieProject.UI.Controllers
         public async Task<IActionResult> Delete(int id)
         {
             var client = _httpClientFactory.CreateClient();
-            var responseMessage = await client.DeleteAsync($"https://localhost:7123/api/Category/{id}");
+            var responseMessage = await client.DeleteAsync($"https://localhost:7096/api/Category/{id}");
             if (responseMessage.IsSuccessStatusCode)
             {
                 return RedirectToAction("Index");
